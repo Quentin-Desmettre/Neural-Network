@@ -41,8 +41,8 @@ namespace deep {
     private:
         double (*_activator)(double const);
         double (*_dx_activator)(double const);
-        cppm::Matrix<double> _values;
-        cppm::Matrix<double> _activated;
+        cppm::Matrix<double> _dx_active;
+        cppm::Matrix<double> _active;
 
     public:
         Layer(cppm::uint64 const& size, Activator activator = SIGMOID);
@@ -51,8 +51,8 @@ namespace deep {
 
         void setActivator(Activator activator);
         void setActivator(double (*activator)(double const), double (*dx_activator)(double const));
-        double (*getActivator(void))(double const) const;
-        double (*get_DxActivator(void))(double const) const;
+        double (*getActivator(void))(double const);
+        double (*get_DxActivator(void))(double const);
 
         const cppm::Matrix<double>& get_dxActivated(void) const;
         const cppm::Matrix<double>& get_Activated(void) const;
