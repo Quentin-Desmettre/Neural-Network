@@ -2,3 +2,5 @@ a.out
 .vscode/
 *.o
 vgcore.*
+main*
+tmp
