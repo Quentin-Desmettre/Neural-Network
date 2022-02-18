@@ -15,6 +15,13 @@ deep::Layer::Layer(cppm::uint64 const& size,
     _activator = activator;
     _dx_activator = dx_activator;
 }
+deep::Layer::Layer(cppm::Matrix<double> const& total, Activator activator)
+{
+    _dx_active = total;
+    _active = total;
+    _activator = deep::ACTIVATORS[activator];
+    _dx_activator = deep::DX_ACTIVATORS[activator];
+}
 
 void deep::Layer::setActivator(Activator activator)
 {

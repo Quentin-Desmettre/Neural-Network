@@ -15,6 +15,8 @@ namespace deep {
 
     enum Activator{SIGMOID, RELU, SWISH, TANH, RELU6, HARDSWISH};
 
+    static const unsigned char NB_ACTIVATOR = 6;
+
     double sigmoid(double const x);
     double dx_sigmoid(double const x);
 
@@ -46,6 +48,7 @@ namespace deep {
 
     public:
         Layer(cppm::uint64 const& size, Activator activator = SIGMOID);
+        Layer(cppm::Matrix<double> const& total, Activator activator = SIGMOID);
         Layer(cppm::uint64 const& size,
               double (*activator)(double const), double (*dx_activator)(double const));
 
@@ -69,6 +72,7 @@ namespace deep {
         std::vector<cppm::Matrix<double>> _weights;
         std::vector<cppm::Matrix<double>> _biases;
         std::vector<Layer> _layers;
+        std::vector<cppm::uint64> _sizes;
 
         cppm::uint64 _nbLayer;
 
@@ -89,35 +93,70 @@ namespace deep {
         }
 
         void _feedForward(cppm::Matrix<double> const& input);
+        void _initFromFile(const std::string &file);
+        static void prm(cppm::Matrix<double> const& input)
+        {
+            for (int i = 0; i < input.getSize()[0]; i++) {
+                for (int j = 0; j < input.getSize()[1]; j++)
+                    printf("%f ", input.at(i, j));
+                printf("\n");
+            }
+            printf("--------------\n");
+        }
+        void _printInfos(void)
+        {
+            printf("nb layer: %d\n", _nbLayer);
+            for (int i = 0; i < _nbLayer; i++)
+                printf("size of layer %d: %d\n", i, _sizes[i]);
+            printf("biases:\n");
+            for (int i = 1; i < _nbLayer; i++)
+                prm(_biases[i - 1]);
+            printf("\n");
+            printf("weights:\n");
+            for (int i = 1; i < _nbLayer; i++)
+                prm(_weights[i - 1]);
+        }
     public:
+        Network(std::string file)
+        {
+            _initFromFile(file);
+        }
+        Network(char const *file)
+        {
+            _initFromFile(std::string(file));
+        }
+        Network(char *file)
+        {
+            _initFromFile(std::string(file));
+        }
         template <typename... Args>
         Network(Args&&... args)
         {
             //srand(time(nullptr));
-            std::vector<cppm::uint64> sizes;
 
-            _getSize<cppm::uint64>(sizes, args...);
-            _nbLayer = sizes.size();
+            _getSize<cppm::uint64>(_sizes, args...);
+            _nbLayer = _sizes.size();
             if (_nbLayer < 2)
                 throw "Invalid network size";
             for (cppm::uint64 i = 0; i < _nbLayer; i++) {
                 // create a layer
-                _layers.push_back(Layer(sizes[i], SIGMOID));
+                _layers.push_back(Layer(_sizes[i], SIGMOID));
                 if (i) {
 
                     // create the weights and biases for the next layer
-                    _weights.push_back(cppm::Matrix<double>(sizes[i], sizes[i - 1]));
-                    _biases.push_back(cppm::Matrix<double>(sizes[i], 1));
+                    _weights.push_back(cppm::Matrix<double>(_sizes[i], _sizes[i - 1]));
+                    _biases.push_back(cppm::Matrix<double>(_sizes[i], 1));
                     // init the weights and biases
-                    for (cppm::uint64 j = 0, n = sizes[i]; j < n; j++) {
+                    for (cppm::uint64 j = 0, n = _sizes[i]; j < n; j++) {
                         _biases.back().at(j, 0) = 1;
-                        for (cppm::uint64 k = 0, m = sizes[i - 1]; k < m; k++)
+                        for (cppm::uint64 k = 0, m = _sizes[i - 1]; k < m; k++)
                             _weights.back().at(j, k) = 0.5;
                     }
                 }
             }
         }
 
+        int saveToFile(std::string const& file);
         const std::vector<Layer> &getLayers(void) const {return _layers;}
         void setLayerActivator(cppm::uint64 index, Activator acti)
         {
