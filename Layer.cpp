@@ -53,3 +53,11 @@ void deep::Layer::set_Activated(const cppm::Matrix<double>& other)
 {
     _active = other;
 }
+
+void deep::Layer::setFrom_WB(cppm::Matrix<double> const& weights, const Layer& prevLay, cppm::Matrix<double> const& biases)
+{
+    cppm::Matrix<double> tmp = weights * prevLay._active;
+
+    _dx_active = tmp.addAndApply(biases, _dx_activator);
+    _active = tmp.addAndApply(biases, _activator);
+}

@@ -59,6 +59,8 @@ namespace deep {
 
         void set_dxActivated(const cppm::Matrix<double>& other);
         void set_Activated(const cppm::Matrix<double>& other);
+
+        void setFrom_WB(cppm::Matrix<double> const& weights, const Layer& prevLay, cppm::Matrix<double> const& biases);
     };
 };
 
