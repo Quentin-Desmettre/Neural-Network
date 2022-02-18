@@ -51,8 +51,8 @@ namespace deep {
 
         void setActivator(Activator activator);
         void setActivator(double (*activator)(double const), double (*dx_activator)(double const));
-        double (*getActivator(void))(double const);
-        double (*get_DxActivator(void))(double const);
+        double (*getActivator(void))(double const) const;
+        double (*get_DxActivator(void))(double const) const;
 
         const cppm::Matrix<double>& get_dxActivated(void) const;
         const cppm::Matrix<double>& get_Activated(void) const;
