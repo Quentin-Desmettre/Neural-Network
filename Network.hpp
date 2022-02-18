@@ -46,7 +46,6 @@ namespace deep {
 
     public:
         Layer(cppm::uint64 const& size, Activator activator = SIGMOID);
-        Layer(cppm::Matrix<double> const& other, Activator activator = SIGMOID);
         Layer(cppm::uint64 const& size,
               double (*activator)(double const), double (*dx_activator)(double const));
 
